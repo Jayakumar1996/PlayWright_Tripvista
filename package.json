@@ -1,0 +1,24 @@
+{
+  "name": "playwright_tripvista",
+  "version": "0.0.1",
+  "description": "Engaging Agents to Exceptional Flight Solutions",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test --headed",
+    "test1": "npx playwright test",
+    "test:debug": "npx playwright test --headed --debug",
+    "test:chrome": "npx playwright test --project=Chrome",
+    "update:playwright": "playwright install --with-deps",
+    "test:record": "npx playwright codegen --viewport-size=1920,1080  https://tripvista.appxpay.in/"
+  },
+  "keywords": [
+    "Playwright"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.1",
+    "monocart-reporter": "^2.9.12"
+  }
+}
