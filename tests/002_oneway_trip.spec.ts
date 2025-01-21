@@ -8,20 +8,17 @@ const successMessage = 'Login Successful! Welcome back.';
 
 export async function login(page) {
   console.log('Navigating to login page...');
-  await page.goto('https://tripvista.appxpay.in/', { waitUntil: 'load', timeout: 60000 });
+  await page.goto('https://tripvista.appxpay.in/', { waitUntil: 'load' });
 
-  console.log('Waiting for the Agent Login button...');
-  await page.locator('button', { hasText: 'Agent Login' }).waitFor({ state: 'visible', timeout: 30000 });
-
-  console.log('Clicking the Agent Login button...');
+  console.log('Logging in...');
   await page.getByRole('button', { name: 'Agent Login' }).click();
-
-  console.log('Filling login credentials...');
   await page.getByPlaceholder('Enter your email').fill(Email);
   await page.getByPlaceholder('Password').fill(password);
-
-  console.log('Submitting login form...');
   await page.getByTestId('modal-wrapper').getByRole('button', { name: 'Login' }).click();
+
+  console.log('Verifying login...');
+  await expect(page.getByText('Login Successful! Welcome back.')).toBeVisible();
+  await expect(page.getByText(verifyProfileName)).toBeVisible();
 
   console.log('Verifying login success message...');
   try {
@@ -31,16 +28,6 @@ export async function login(page) {
   } catch (e) {
     console.error('Error verifying login success message:', e);
     await page.screenshot({ path: 'error-login-message.png' });
-    throw e;
-  }
-
-  console.log('Verifying profile name...');
-  try {
-    await expect(page.getByText(verifyProfileName)).toBeVisible({ timeout: 5000 });
-    console.log('Profile name verified.');
-  } catch (e) {
-    console.error('Error verifying profile name:', e);
-    await page.screenshot({ path: 'error-profile-name.png' });
     throw e;
   }
 }
@@ -55,17 +42,14 @@ export async function logout(page) {
   await expect(page.getByRole('button', { name: 'Agent Login' })).toBeVisible();
 }
 
-async function selectLocation(page, type, locationInput, gridcellText) {
+export async function selectLocation(page, type, locationInput, gridcellText) {
   let locationField;
 
   // Determine the locator based on the type
   if (type === 'From') {
     locationField = page.getByPlaceholder('Select a location').first();
   } else if (type === 'To') {
-    locationField = page
-      .locator('div')
-      .filter({ hasText: /^To$/ })
-      .getByPlaceholder('Select a location');
+    locationField = page.getByPlaceholder('Select a location').nth(1);
   } else {
     throw new Error(`Invalid type: ${type}. Use 'From' or 'To'.`);
   }
@@ -85,13 +69,13 @@ async function selectLocation(page, type, locationInput, gridcellText) {
   await page.getByRole('gridcell', { name: gridcellText }).click();
 }
 
-async function searchIcon(page) {
+export async function searchIcon(page) {
   console.log('Clicking on the Search Icon...');
   await page.getByRole('img', { name: 'Search Icon' }).click();
   console.log('Search initiated for flights.');
 }
 
-async function verifyFlightList(page, from, to) {
+export async function verifyFlightList(page, from, to) {
   console.log('Verifying selected "From" and "To" locations...');
   await expect(page.getByPlaceholder('Select a location').first()).toHaveValue(from);
   await expect(page.getByPlaceholder('Select a location').nth(1)).toHaveValue(to);
@@ -102,13 +86,13 @@ async function verifyFlightList(page, from, to) {
   console.log('Flight list displayed for the selected route.');
 }
 
-async function viewFlights(page) {
+export async function viewFlights(page) {
   console.log('Clicking on the first "View Flights" button...');
   await page.getByRole('button', { name: 'View Flights' }).first().click();
   console.log('Clicked on "View Flights".');
 }
 
-async function viewFlightDetailsModal(page) {
+export async function viewFlightDetailsModal(page) {
   console.log('Verifying "View Flight Details" button...');
   await expect(page.getByRole('button', { name: 'View Flight Details' }).first()).toBeVisible();
 
@@ -144,7 +128,7 @@ async function closeModal(page) {
   console.log('Flight details modal closed.');
 }
 
-async function verifyAndBookNow(page) {
+export async function verifyAndBookNow(page) {
   console.log('Verifying "Book Now" button...');
   await expect(page.getByRole('button', { name: 'Book Now' }).first()).toBeVisible();
   console.log('"Book Now" button is visible.');
@@ -159,7 +143,7 @@ async function verifyBookingPage(page) {
   console.log('Booking details page verified successfully.');
 }
 
-test.describe.only('Agent Login Flow', () => {
+test.describe('Agent Login Flow', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log('Starting test: Logging in...');
@@ -505,7 +489,7 @@ test.describe.only('Agent Login Flow', () => {
 //   });
 
 
-test.only('Tc_23: Verify Filters list and airline availability after applying filters', async ({ page }) => {
+test('Tc_23: Verify Filters list and airline availability after applying filters', async ({ page }) => {
   
   // Step 1: Select locations for the flight search
   await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');

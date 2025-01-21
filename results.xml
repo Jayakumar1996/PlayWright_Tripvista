@@ -1,33 +1,68 @@
-<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="40.652284">
-<testsuite name="002_oneway_trip.spec.ts" timestamp="2025-01-13T08:25:59.508Z" hostname="chrome" tests="1" failures="0" skipped="0" time="36.225" errors="0">
-<testcase name="Agent Login Flow › Tc_23: Verify Filters list and airline availability after applying filters" classname="002_oneway_trip.spec.ts" time="36.225">
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="49.917682">
+<testsuite name="round_trip.spec.ts" timestamp="2025-01-21T05:58:42.845Z" hostname="chrome" tests="1" failures="1" skipped="0" time="41.832" errors="0">
+<testcase name="RoundTrip testing functionality › TC_25: Verify and Validate the seat selection functionality on the &quot;Complete Your Booking&quot; details page." classname="round_trip.spec.ts" time="41.832">
+<failure message="round_trip.spec.ts:215:7 TC_25: Verify and Validate the seat selection functionality on the &quot;Complete Your Booking&quot; details page." type="FAILURE">
+<![CDATA[  [chrome] › round_trip.spec.ts:215:7 › RoundTrip testing functionality › TC_25: Verify and Validate the seat selection functionality on the "Complete Your Booking" details page. 
+
+    Error: Timed out 5000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByRole('heading', { name: 'Departure Flight' })
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - expect.toBeVisible with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Departure Flight' })
+
+
+      269 |     await searchIcon(page);
+      270 |     await page.waitForTimeout(10000); // Use explicit waits only when necessary
+    > 271 |     await expect(page.getByRole('heading', { name: 'Departure Flight' })).toBeVisible();
+          |                                                                           ^
+      272 |     await expect(page.getByRole('heading', { name: 'Return Flight' })).toBeVisible();
+      273 |
+      274 |     console.log('Booking flights...');
+        at C:\Users\jayakumart\Automation\Playwright Automation\Playwright_Tripvista\Playwright_Tripvista\tests\round_trip.spec.ts:271:75
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
 <![CDATA[Starting test: Logging in...
 Navigating to login page...
-Waiting for the Agent Login button...
-Clicking the Agent Login button...
-Filling login credentials...
-Submitting login form...
+Logging in...
+Verifying login...
 Verifying login success message...
 Login success message verified.
-Verifying profile name...
-Profile name verified.
+Starting test: Booking a round-trip flight...
+Selecting departure location...
+Selecting destination location...
+Selecting dates...
+Updating passenger count...
+Selecting travel class...
+Verifying "Direct flight" filter is visible...
+Searching for flights...
 Clicking on the Search Icon...
 Search initiated for flights.
-Verifying selected "From" and "To" locations...
-Verified that both "From" and "To" locations are set correctly.
-Verifying that the flight list is displayed...
-Flight list displayed for the selected route.
-Open Airlines filter and apply the "SpiceJet" filter
-Verify SpiceJet is present
-Is SpiceJet present after applying filter: [33mtrue[39m
-Verify Air India is not present
-Is Air India present after applying filter: [33mfalse[39m
-Open Airlines filter and uncheck "SpiceJet", then check "Air India"
-Verify Air India is present
-Is Air India present after applying filter: [33mtrue[39m
-Verify SpiceJet is no longer present
-Is SpiceJet still present after switching to Air India filter: [33mfalse[39m
+
+[[ATTACHMENT|test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\video.webm]]
+
+[[ATTACHMENT|test-results\round_trip-RoundTrip-testi-bcf41--Your-Booking-details-page--chrome\trace.zip]]
 ]]>
 </system-out>
 </testcase>
