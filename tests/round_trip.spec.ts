@@ -206,7 +206,7 @@ export async function login(page) {
 //       // console.log('Test completed: Round-trip booking workflow successfully verified.');
 //       // await logout(page);
 
-test.describe.only('RoundTrip testing functionality', () => {
+test.describe('RoundTrip testing functionality', () => {
   test.beforeEach(async ({ page }) => {
     console.log('Starting test: Logging in...');
     await login(page);
