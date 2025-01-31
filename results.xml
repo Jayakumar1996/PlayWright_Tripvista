@@ -1,6 +1,6 @@
-<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="24.733013">
-<testsuite name="002_oneway_trip.spec.ts" timestamp="2025-01-28T05:49:43.072Z" hostname="chrome" tests="1" failures="0" skipped="0" time="20.928" errors="0">
-<testcase name="Agent Login Flow › Tc_19: Verify validation throws when searching with empty &quot;From&quot; location" classname="002_oneway_trip.spec.ts" time="20.928">
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="34.785889">
+<testsuite name="002_oneway_trip.spec.ts" timestamp="2025-01-31T10:58:19.364Z" hostname="chrome" tests="1" failures="0" skipped="0" time="31.675" errors="0">
+<testcase name="Agent Login Flow › Tc_23: Verify and Validate the Flight Filters Airlines Functionality on the Flight List Page" classname="002_oneway_trip.spec.ts" time="31.675">
 <system-out>
 <![CDATA[Starting test: Logging in...
 Navigating to login page...
@@ -8,8 +8,18 @@ Logging in...
 Verifying login...
 Verifying login success message...
 Login success message verified.
-Verified that "To" location is set to Delhi.
-The Search Icon button is enabled.
+Clicking on the Search Icon...
+Search initiated for flights.
+Open Airlines filter and apply the "SpiceJet" filter
+Verify SpiceJet is present
+Is SpiceJet present after applying filter: [33mtrue[39m
+Verify Air India is not present
+Is Air India present after applying filter: [33mfalse[39m
+Open Airlines filter and uncheck "SpiceJet", then check "Air India"
+Verify Air India is present
+Is Air India present after applying filter: [33mtrue[39m
+Verify SpiceJet is no longer present
+Is SpiceJet still present after switching to Air India filter: [33mfalse[39m
 ]]>
 </system-out>
 </testcase>

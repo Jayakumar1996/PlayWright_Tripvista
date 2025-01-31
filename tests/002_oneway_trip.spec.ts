@@ -382,7 +382,7 @@ test.describe.only('Agent Login Flow', () => {
     
   });
 
-  test.only('Tc_19: Verify validation throws when searching with empty "From" location', async ({ page }) => {
+  test('Tc_19: Verify validation throws when searching with empty "From" location', async ({ page }) => {
     await page.getByPlaceholder('Select a location').first().click();
     await page.getByPlaceholder('Select a location').first().press('ControlOrMeta+a');
     await page.getByPlaceholder('Select a location').first().fill('');
@@ -424,20 +424,7 @@ test.describe.only('Agent Login Flow', () => {
     }
   });
 
-  test('Tc_21: Verify and validate the "Book Now" functionality for flight details on the Flight List page.', async ({ page }) => {
-    await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
-    await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
-    await searchIcon(page);
-    await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
-    await viewFlights(page);
-    await viewFlightDetailsModal(page);
-    await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
-    await closeModal(page);
-    await verifyAndBookNow(page);
-    await verifyBookingPage(page);
-  });
-
-  test('Tc_22: Verify and validate the "Flight Filters" functionality for flight details on the Flight List page.', async ({ page }) => {
+  test('Tc_21: Verify and validate the "Flight Filters" functionality for flight details on the Flight List page.', async ({ page }) => {
     await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
     await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
     await searchIcon(page);
@@ -451,13 +438,13 @@ test.describe.only('Agent Login Flow', () => {
   });
 
   
-test('Tc_23: Verify Filters list and airline availability after applying filters', async ({ page }) => {
+test('Tc_22: Verify and Validate the Flight Filters Airlines Functionality on the Flight List Page', async ({ page }) => {
   
   // Step 1: Select locations for the flight search
   await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
   await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
   await searchIcon(page);
-  await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
 
   console.log('Open Airlines filter and apply the "SpiceJet" filter');
   
@@ -517,8 +504,755 @@ test('Tc_23: Verify Filters list and airline availability after applying filters
   expect(isSpiceJetStillPresent).toBeFalsy();
 
 });
+test('Tc_23: Verify and Validate the Flight Filters Cabin Classes Functionality on the Flight List Page', async ({page})=>{
+ // Step 1: Select locations for the flight search
+ await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+ await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+ await searchIcon(page);
+
+  // List of cabin classes
+  const cabinClasses = ['BUSINESS', 'PREMIUM_ECONOMY', 'FIRST', 'ECONOMY'];
+
+  // Function to apply filter for a cabin class
+  const applyFilter = async (cabinClass) => {
+    console.log(`Applying filter: ${cabinClass}`);
+    await page.getByRole('button', { name: 'Cabin Classes' }).click();
+  };
+
+  // Function to verify displayed flights
+  const verifyFlights = async (expectedClass) => {
+    await page.getByRole('button', { name: 'View Flights' }).first().click();
+    console.log(`Verifying flights for cabin class: ${expectedClass}`);
+    const flights = await page.locator('p').filter({ hasText: expectedClass }).allTextContents();
+    console.log(`Displayed flights for ${expectedClass}:`, flights);
+    for (const flight of flights) {
+      expect(flight).toContain(expectedClass); // Ensure all flights belong to the selected class
+    }
+  };
+
+  // Loop through each cabin class and test
+  for (const cabinClass of cabinClasses) {
+    await applyFilter(cabinClass); // Apply filter
+    await verifyFlights(cabinClass); // Verify results
+    await page.getByLabel(cabinClass).uncheck(); // Reset filter
+  }
+
+  // Test case for multiple cabin classes
+  console.log('Testing multiple cabin class selection...');
+  await page.getByLabel('BUSINESS').check();
+  await page.getByLabel('ECONOMY').check();
+  await page.getByRole('button', { name: 'View Flights' }).first().click();
+
+  // Verify both BUSINESS and ECONOMY flights are displayed
+  const mixedFlights = await page.locator('p').filter({ hasText: /BUSINESS|ECONOMY/ }).allTextContents();
+  console.log('Displayed flights for BUSINESS and ECONOMY:', mixedFlights);
+  for (const flight of mixedFlights) {
+    expect(flight).toMatch(/BUSINESS|ECONOMY/);
+  }
+
+  // Reset all filters
+  await page.getByLabel('BUSINESS').uncheck();
+  await page.getByLabel('ECONOMY').uncheck();
+
+  console.log('Test completed successfully!');
+});
+test('Tc_24: Verify and Validate the Flight Filters Fare Range Filter Functionality on the Flight List Page', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+
+ // Open the Fare Range filter
+console.log('Clicking the Fare Range filter button...');
+await page.getByRole('button', { name: 'Fare Range' }).click();
+
+// Locate the slider handle
+console.log('Locating the slider handle...');
+const sliderHandle = page.getByTestId('slider-handle');
+
+// Get the bounding box of the slider handle
+console.log('Getting the bounding box of the slider handle...');
+const boundingBox = await sliderHandle.boundingBox();
+if (!boundingBox) {
+  console.error('Error: Slider handle bounding box not found.');
+  throw new Error('Slider handle bounding box not found.');
+}
+
+console.log('Bounding box found:', boundingBox);
+
+// Simulate clicking and dragging the slider without releasing the click
+const startX = boundingBox.x + boundingBox.width / 2;
+const startY = boundingBox.y + boundingBox.height / 2;
+const dragOffset = 6000; // Adjust this value for how far to drag
+
+console.log(`Starting drag at coordinates (${startX}, ${startY}) with an offset of ${dragOffset} pixels.`);
+
+// Move to the slider handle and press the mouse down
+console.log('Moving the mouse to the slider handle and pressing down...');
+await page.mouse.move(startX, startY);
+await page.mouse.down();
+
+// Drag the slider to the right (keeping the click pressed)
+console.log(`Dragging the slider to the right by ${dragOffset} pixels...`);
+await page.mouse.move(startX + dragOffset, startY, { steps: 10 });
+
+console.log('Slider drag action completed.');
+
 
 });
+
+test('Tc_25: Verify and validate the "View Fares" functionality on the Flight List page.', async ({ page }) => {
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+// need to hover on fare
+
+// Get all the info icons (assuming they are <img> elements next to prices)
+const infoIcons = await page.locator('p').filter({ hasText: '₹' }).getByRole('img');
+
+// Loop through all the info icons and hover over each one, then print the price dynamically
+const numberOfIcons = await infoIcons.count();
+console.log(`Found ${numberOfIcons} info icons.`);
+
+for (let i = 0; i < numberOfIcons; i++) {
+  console.log(`Hovering over info icon ${i + 1}...`);
+
+  // Hover over the icon
+  await infoIcons.nth(i).hover();
+
+  // Get the price text associated with the current info icon
+  const priceText = await page.locator('p').nth(i).textContent();
+
+  console.log(`Price for icon ${i + 1}: ${priceText}`);
+
+  // You can add additional conditions or actions if needed based on the price
+}
+
+});
+
+test('Tc_26: Verify and validate the "View Flight Details" on the flight listing page', async ({ page }) => {
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+});
+
+test('Tc_27: Verify and validate the "Book Now" functionality for flight details on the Flight List page.', async ({ page }) => {
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+});
+
+test('Tc_28: Verify and validate Flight Itinery functionality on the Booking Page.', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // need to fill gst fields
+  await page.getByPlaceholder('GSTIN Mobile Number').click();
+  await page.getByPlaceholder('GSTIN', { exact: true }).dblclick();
+  await page.getByPlaceholder('GSTIN', { exact: true }).fill('98734982394234');
+  await page.getByPlaceholder('GSTIN Mobile Number').click();
+  await page.getByPlaceholder('GSTIN Mobile Number').fill('7200318249');
+  await page.getByPlaceholder('GSTIN Email Address').click();
+  await page.getByPlaceholder('GSTIN Email Address').fill('jk@yopmail.com');
+  await page.getByPlaceholder('GSTIN Phone Number').click();
+  await page.getByPlaceholder('GSTIN Phone Number').fill('9876543210');
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+});
+
+test('Tc_29: Verify and Validate Add-ons Functionality on the Complete Your Booking Details Page', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  console.log("Selecting Meal Preferences...");
+  await expect(page.getByRole('tablist')).toContainText('Meals');
+  await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  await page.getByLabel('Non-Veg').check();
+  
+  // 5️⃣ Choose Baggage Addons
+  console.log("Selecting Baggage Preferences...");
+  await page.getByRole('tab', { name: 'Baggage' }).click();
+  await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  
+  console.log("AddOns flow completed successfully.");
+});
+
+test('Tc_30: Verify and Validate the seat selection functionality on the "Complete Your Booking" details page', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  console.log("Selecting Meal Preferences...");
+  await expect(page.getByRole('tablist')).toContainText('Meals');
+  await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  await page.getByLabel('Non-Veg').check();
+  
+  // 5️⃣ Choose Baggage Addons
+  console.log("Selecting Baggage Preferences...");
+  await page.getByRole('tab', { name: 'Baggage' }).click();
+  await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 6️⃣ Seat Selection
+  console.log("Selecting Seats...");
+  await expect(page.locator('form')).toContainText('Seat Selection');
+  await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+  await page.getByText('10A').click();
+  await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+  await page.locator('html').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 7️⃣ Contact Details
+  console.log("Verifying Contact Details...");
+  await expect(page.locator('form')).toContainText('Contact Details');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  console.log("Checking Validation Messages...");
+  await expect(page.getByText('Mobile number is required')).toBeVisible();
+  await expect(page.getByText('Email is required')).toBeVisible();
+  
+  // 8️⃣ Enter Correct Contact Information
+  console.log("Filling Correct Contact Information...");
+  await page.getByPlaceholder('Mobile Number').fill('7200315848');
+  await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 9️⃣ Agree to Terms & Confirm Payment
+  console.log("Agreeing to Terms & Confirming Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Confirm Payment']").click();
+  });
+
+test('Tc_31: Flight Booking Reconfirmation Page listing page is loded', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  console.log("Selecting Meal Preferences...");
+  await expect(page.getByRole('tablist')).toContainText('Meals');
+  await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  await page.getByLabel('Non-Veg').check();
+  
+  // 5️⃣ Choose Baggage Addons
+  console.log("Selecting Baggage Preferences...");
+  await page.getByRole('tab', { name: 'Baggage' }).click();
+  await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 6️⃣ Seat Selection
+  console.log("Selecting Seats...");
+  await expect(page.locator('form')).toContainText('Seat Selection');
+  await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+  await page.getByText('10A').click();
+  await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+  await page.locator('html').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 7️⃣ Contact Details
+  console.log("Verifying Contact Details...");
+  await expect(page.locator('form')).toContainText('Contact Details');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  console.log("Checking Validation Messages...");
+  await expect(page.getByText('Mobile number is required')).toBeVisible();
+  await expect(page.getByText('Email is required')).toBeVisible();
+  
+  // 8️⃣ Enter Correct Contact Information
+  console.log("Filling Correct Contact Information...");
+  await page.getByPlaceholder('Mobile Number').fill('7200315848');
+  await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 9️⃣ Agree to Terms & Confirm Payment
+  console.log("Agreeing to Terms & Confirming Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Confirm Payment']").click();
+  
+  // 🔟 Final Payment Process
+  console.log("Proceeding with Final Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Make Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Make Payment']").click();
+  
+});
+
+test('Tc_32: "Verify and Validate the seat selection functionality on the ""Complete Your Wallet Payment Option"" details page', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  console.log("Selecting Meal Preferences...");
+  await expect(page.getByRole('tablist')).toContainText('Meals');
+  await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  await page.getByLabel('Non-Veg').check();
+  
+  // 5️⃣ Choose Baggage Addons
+  console.log("Selecting Baggage Preferences...");
+  await page.getByRole('tab', { name: 'Baggage' }).click();
+  await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 6️⃣ Seat Selection
+  console.log("Selecting Seats...");
+  await expect(page.locator('form')).toContainText('Seat Selection');
+  await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+  await page.getByText('10A').click();
+  await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+  await page.locator('html').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 7️⃣ Contact Details
+  console.log("Verifying Contact Details...");
+  await expect(page.locator('form')).toContainText('Contact Details');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  console.log("Checking Validation Messages...");
+  await expect(page.getByText('Mobile number is required')).toBeVisible();
+  await expect(page.getByText('Email is required')).toBeVisible();
+  
+  // 8️⃣ Enter Correct Contact Information
+  console.log("Filling Correct Contact Information...");
+  await page.getByPlaceholder('Mobile Number').fill('7200315848');
+  await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 9️⃣ Agree to Terms & Confirm Payment
+  console.log("Agreeing to Terms & Confirming Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Confirm Payment']").click();
+  
+  // 🔟 Final Payment Process
+  console.log("Proceeding with Final Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Make Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Make Payment']").click();
+  
+  // Selecting Wallet
+  console.log("Selecting Wallet...");
+  await page.locator("//button[normalize-space()='Pay Now']").click();
+  
+  console.log("Booking flow completed successfully.");
+});
+
+test('Tc_33: "Verify and Validate the seat selection functionality on the ""Complete Your Razor Pay payment Option" details page.', async ({page})=>{
+  await selectLocation(page, 'From', 'chennai', 'Chennai, Chennai Arpt MAA');
+  await selectLocation(page, 'To', 'delhi', 'Delhi, Delhi Indira Gandhi');
+  await searchIcon(page);
+  // await verifyFlightList(page, 'Chennai - Chennai Arpt', 'Delhi - Delhi Indira Gandhi Intl');
+  await viewFlights(page);
+  await viewFlightDetailsModal(page);
+  await verifyModalContent(page, 'Chennai Arpt (MAA)', 'Delhi Indira Gandhi Intl (DEL)');
+  await closeModal(page);
+  await verifyAndBookNow(page);
+  await verifyBookingPage(page);
+
+  console.log("Starting the booking flow...");
+
+  // 1️⃣ Verify Traveller Details Page
+  await expect(page.locator('form')).toContainText('Traveller Details');
+  await expect(page.locator('form')).toContainText('Change Flight');
+  
+  // 2️⃣ Select Traveller Title and Enter Details
+  console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  console.log("Selecting Meal Preferences...");
+  await expect(page.getByRole('tablist')).toContainText('Meals');
+  await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  await page.getByLabel('Non-Veg').check();
+  
+  // 5️⃣ Choose Baggage Addons
+  console.log("Selecting Baggage Preferences...");
+  await page.getByRole('tab', { name: 'Baggage' }).click();
+  await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 6️⃣ Seat Selection
+  console.log("Selecting Seats...");
+  await expect(page.locator('form')).toContainText('Seat Selection');
+  await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+  await page.getByText('10A').click();
+  await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+  await page.locator('html').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 7️⃣ Contact Details
+  console.log("Verifying Contact Details...");
+  await expect(page.locator('form')).toContainText('Contact Details');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  console.log("Checking Validation Messages...");
+  await expect(page.getByText('Mobile number is required')).toBeVisible();
+  await expect(page.getByText('Email is required')).toBeVisible();
+  
+  // 8️⃣ Enter Correct Contact Information
+  console.log("Filling Correct Contact Information...");
+  await page.getByPlaceholder('Mobile Number').fill('7200315848');
+  await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 9️⃣ Agree to Terms & Confirm Payment
+  console.log("Agreeing to Terms & Confirming Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Confirm Payment']").click();
+  
+  // 🔟 Final Payment Process
+  console.log("Proceeding with Final Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Make Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Make Payment']").click();
+  
+  // Selecting  Razorpay
+  console.log("Selecting Razorpay...");
+  await page.locator("//a[normalize-space()='Razor PAY']").click();
+  await page.locator("//button[normalize-space()='Pay Now']").click();
+
+  // Wait for 2 minutes (120,000 milliseconds) to allow manual payment
+console.log('Waiting for 2 minutes to complete the payment manually...');
+await page.waitForTimeout(120000); // 120000ms = 2 minutes
+
+console.log('2 minutes wait completed, proceeding with the next steps...');
+console.log("Booking flow completed successfully.");
+  
+// await expect(page.locator('form')).toContainText('Traveller Details');
+// await expect(page.locator('form')).toContainText('Change Flight');
+// await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+// await page.getByText('Mr', { exact: true }).click();
+// await page.getByPlaceholder('First Name').click();
+// await page.getByPlaceholder('First Name').fill('Jayakumar');
+// await page.getByPlaceholder('First Name').press('Tab');
+// await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+// await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+// await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+// await page.getByPlaceholder('Email ID').click();
+// await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+// await page.getByPlaceholder('Passport number').click();
+// await page.getByPlaceholder('Passport number').fill('98765432');
+// await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+// await page.getByRole('button', { name: 'Continue' }).click();
+// await expect(page.locator('form')).toContainText('Addons (Optional)');
+// await expect(page.getByRole('tablist')).toContainText('Meals');
+// await expect(page.getByRole('tablist')).toContainText('Baggage');
+// await expect(page.getByRole('radiogroup')).toContainText('Veg');
+// await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+// await page.getByLabel('Non-Veg').check();
+// await page.getByRole('tab', { name: 'Baggage' }).click();
+// await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+// await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 2 Bag');
+// await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 3 Bag');
+// await expect(page.getByLabel('Baggage')).toContainText('5KG');
+// await expect(page.getByLabel('Baggage')).toContainText('10KG');
+// await expect(page.getByLabel('Baggage')).toContainText('15KG');
+// await expect(page.getByLabel('Baggage')).toContainText('20KG');
+// await expect(page.getByLabel('Baggage')).toContainText('30KG');
+// await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+// await page.getByRole('button', { name: 'Continue' }).click();
+// await expect(page.locator('form')).toContainText('Seat Selection');
+// await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+// await expect(page.getByText('1A1B1C1D1E1F2A2B2C2D2E2F3A3B3C3D3E3F4D4E4F5A5B5C5D5E5F6A6B6C6D6E6F7A7B7C7D7E7F8A')).toBeVisible();
+// await page.getByText('10A').click();
+// await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+// await page.locator('html').click();
+// await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+// await page.getByRole('button', { name: 'Continue' }).click();
+// await expect(page.locator('form')).toContainText('Contact Details');
+// await expect(page.locator('form')).toContainText('Contact Details');
+// await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+// await page.getByRole('button', { name: 'Continue' }).click();
+// await expect(page.getByText('Mobile number is required')).toBeVisible();
+// await expect(page.getByText('Email is required')).toBeVisible();
+// await page.getByPlaceholder('Mobile Number').click();
+// await page.getByPlaceholder('Mobile Number').fill('7200315848');
+// await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+// await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+// await page.getByRole('button', { name: 'Continue' }).click();
+// await page.locator('#agree').scrollIntoViewIfNeeded();
+// await page.locator('#agree').check();
+// await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+// await page.locator("//button[normalize-space()='Confirm Payment']").click();
+// await page.locator('#agree').scrollIntoViewIfNeeded();
+// await page.locator('#agree').check();
+// await page.locator("//button[normalize-space()='Make Payment']").scrollIntoViewIfNeeded();
+// await page.locator("//button[normalize-space()='Make Payment']").click();
+// //wallet or razorpay
+// await page.locator("//button[normalize-space()='Pay Now']").click();
+// //razorpay
+// await page.locator("//a[normalize-space()='Razor PAY']").click();
+// await page.locator("//button[normalize-space()='Pay Now']").click();
+});
+
+
+});
+
+
+
+
 // wait page.getByPlaceholder('Select a location').first().click();
 //   await page.getByPlaceholder('Select a location').first().press('ControlOrMeta+a');
 //   await page.getByPlaceholder('Select a location').first().fill('');
