@@ -142,7 +142,7 @@ async function verifyBookingPage(page) {
   console.log('Booking details page verified successfully.');
 }
 
-test.describe.only('Agent Login Flow', () => {
+test.describe('Agent Login Flow', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log('Starting test: Logging in...');
