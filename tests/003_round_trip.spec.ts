@@ -259,7 +259,8 @@ await expect(page.getByPlaceholder('Departure Date')).toHaveValue(expectedDate);
 
   test('TC_08: Verify the default selection of Adult 1, Children 0, Infants 0, and Economy class are pre-selected in the Passenger dropdown field on the Dashboard Page. @smoke', async ({ page }) => {
  
-    
+    await page.getByRole('button', { name: 'Round Trip' }).click();
+    await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
 
 // Step 1: Verify Default Selection
 const userSelectionButton = page.getByRole('button', { name: /User Adults \d+, Children \d+,/ }); 
@@ -297,5 +298,143 @@ for (const value of expectedValues) {
 
   });
 
+  // Function to get the formatted date (DD/MM/YYYY)
+const getFormattedDate = (daysToAdd = 0) => {
+  const today = new Date();
+  today.setDate(today.getDate() + daysToAdd);
+  return today.toLocaleDateString('en-GB').replace(/\//g, '/'); // Format: DD/MM/YYYY
+};
 
+// Function to clear input field
+const clearInputField = async (locator) => {
+  await locator.dblclick();
+  await locator.press('ControlOrMeta+a');
+  await locator.fill('');
+};
+
+  test('TC_09: Verify the functionality of the Search icon when the "From" and "To" Location & Departure and Arrival date  values are removed  on the Dashboard Page. @smoke', async ({ page }) => {
+                 // Get today's and return date dynamically
+  const todayDate = getFormattedDate(0);
+  const returnDate = getFormattedDate(1);
+
+  // Click Round Trip button and verify it's enabled
+  await page.getByRole('button', { name: 'Round Trip' }).click();
+  await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
+
+  // Verify initial values
+  await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+  const fromInput = page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location');
+  const toInput = page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location');
+
+  await expect(fromInput).toHaveValue('Chennai - Chennai Arpt');
+  await expect(toInput).toHaveValue('Delhi - Delhi Indira Gandhi Intl');
+  await expect(page.getByPlaceholder('Departure Date')).toHaveValue(todayDate);
+  await expect(page.getByPlaceholder('Book a return flight')).toHaveValue(returnDate);
+
+  console.log(`Verified departure date: ${todayDate}`);
+  console.log(`Verified return date: ${returnDate}`);
+
+  // Clear "From" and "To" fields
+  await clearInputField(fromInput);
+  await clearInputField(toInput);
+
+  // Clear departure and return dates
+  await page.getByRole('gridcell', { name: 'Return Calendar Icon' }).getByLabel('Clear').click();
+  await page.getByLabel('Clear').click();
+
+  // Function to verify empty fields
+  const verifyEmptyFields = async () => {
+    await expect(fromInput).toBeEmpty();
+    await expect(toInput).toBeEmpty();
+    await expect(page.getByPlaceholder('Departure Date')).toHaveValue('');
+    await expect(page.getByPlaceholder('Book a return flight')).toHaveValue('');
+  };
+
+  // Verify fields are empty
+  await verifyEmptyFields();
+  await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+  
+    
+      });
+
+      test('TC_10: Verify the default patched location details on "From" & "To" fields on Dashboard page. @smoke', async ({ page }) => {
+  // Click Round Trip button and verify it's enabled
+  await page.getByRole('button', { name: 'Round Trip' }).click();
+  await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
+
+  // Verify initial values
+  await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+  const fromInput = page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location');
+  const toInput = page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location');
+
+  await expect(fromInput).toHaveValue('Chennai - Chennai Arpt');
+  await expect(toInput).toHaveValue('Delhi - Delhi Indira Gandhi Intl');
+    
+  
+    
+      });
+
+      test('TC_11: Verify "From" & "To" Search Field Functionality on the Dashboard Page. @smoke', async ({ page }) => {
+ 
+        await page.getByRole('button', { name: 'Round Trip' }).click();
+        await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
+      
+        // Verify initial values
+        await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+        const fromInput = page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location');
+        const toInput = page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location');
+      
+        await expect(fromInput).toHaveValue('Chennai - Chennai Arpt');
+        await expect(toInput).toHaveValue('Delhi - Delhi Indira Gandhi Intl');
+        
+      
+        // Clear "From" and "To" fields
+        await clearInputField(fromInput);
+        await clearInputField(toInput);
+        await page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location').fill('beng');
+        await page.getByRole('gridcell', { name: 'Bengaluru, Bengaluru Intl' }).click();
+        await page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location').fill('chenn');
+  await page.getByRole('gridcell', { name: 'Chennai, Chennai Arpt MAA' }).click();
+  await expect(page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location')).toHaveValue('Bengaluru - Bengaluru Intl Arpt');
+  await expect(page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location')).toHaveValue('Chennai - Chennai Arpt');
+    
+      });
+
+
+      test('TC_12: Verify Interchange Location Functionality on the Dashboard Page after click interchange button.. @smoke', async ({ page }) => {
+
+    
+        await page.getByRole('button', { name: 'Round Trip' }).click();
+        await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
+      
+        // Verify initial values
+        await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+        const fromInput = page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location');
+        const toInput = page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location');
+      
+        await expect(fromInput).toHaveValue('Chennai - Chennai Arpt');
+        await expect(toInput).toHaveValue('Delhi - Delhi Indira Gandhi Intl');
+        
+      
+        // Clear "From" and "To" fields
+        await clearInputField(fromInput);
+        await clearInputField(toInput);
+        await page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location').fill('beng');
+        await page.getByRole('gridcell', { name: 'Bengaluru, Bengaluru Intl' }).click();
+        await page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location').fill('chenn');
+  await page.getByRole('gridcell', { name: 'Chennai, Chennai Arpt MAA' }).click();
+  await expect(page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location')).toHaveValue('Bengaluru - Bengaluru Intl Arpt');
+  await expect(page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location')).toHaveValue('Chennai - Chennai Arpt');
+
+
+        await page.getByRole('img', { name: 'icon', exact: true }).click();
+  await expect(page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location')).toHaveValue('Chennai - Chennai Arpt');
+  await expect(page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location')).toHaveValue('Bengaluru - Bengaluru Intl Arpt');
+
+
+
+
+
+  
+      });
 });

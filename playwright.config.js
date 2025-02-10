@@ -7,6 +7,9 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 2,
   timeout: 60000,
+  use: {
+    viewport: { width: 1920, height: 1080 },
+  },
   reporter: [
     ["line"],
     ['html'],
