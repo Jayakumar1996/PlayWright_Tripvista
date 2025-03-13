@@ -1,6 +1,38 @@
-<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="34.785889">
-<testsuite name="002_oneway_trip.spec.ts" timestamp="2025-01-31T10:58:19.364Z" hostname="chrome" tests="1" failures="0" skipped="0" time="31.675" errors="0">
-<testcase name="Agent Login Flow › Tc_23: Verify and Validate the Flight Filters Airlines Functionality on the Flight List Page" classname="002_oneway_trip.spec.ts" time="31.675">
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="22.092686">
+<testsuite name="003_OnewayTrip.spec.ts" timestamp="2025-03-07T12:35:17.419Z" hostname="chrome" tests="1" failures="1" skipped="0" time="18.548" errors="0">
+<testcase name="Agent Login Flow › Verify flight interchange functionality" classname="003_OnewayTrip.spec.ts" time="18.548">
+<failure message="003_OnewayTrip.spec.ts:329:6 Verify flight interchange functionality" type="FAILURE">
+<![CDATA[  [chrome] › 003_OnewayTrip.spec.ts:329:6 › Agent Login Flow › Verify flight interchange functionality 
+
+    TypeError: searchInput.fill is not a function
+
+      118 |     } else if (type === 'To') {
+      119 |      const searchInput = page.getByPlaceholder('Search').last().click();
+    > 120 |       await searchInput.fill('delhi');
+          |                         ^
+      121 |       await page.getByTestId('picker-popup').getByText('Delhi', { exact: true }).click();
+      122 |       await expect(page.getByText('ToDelhiDEL, Delhi Indira')).toBeVisible();
+      123 |       console.log('Entered Delhi (DEL) in the To field');
+        at selectLocationField (C:\Users\jayakumart\Automation\Playwright Automation\Playwright_Tripvista\Playwright_Tripvista\tests\003_OnewayTrip.spec.ts:120:25)
+        at C:\Users\jayakumart\Automation\Playwright Automation\Playwright_Tripvista\Playwright_Tripvista\tests\003_OnewayTrip.spec.ts:336:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
 <system-out>
 <![CDATA[Starting test: Logging in...
 Navigating to login page...
@@ -8,18 +40,14 @@ Logging in...
 Verifying login...
 Verifying login success message...
 Login success message verified.
-Clicking on the Search Icon...
-Search initiated for flights.
-Open Airlines filter and apply the "SpiceJet" filter
-Verify SpiceJet is present
-Is SpiceJet present after applying filter: [33mtrue[39m
-Verify Air India is not present
-Is Air India present after applying filter: [33mfalse[39m
-Open Airlines filter and uncheck "SpiceJet", then check "Air India"
-Verify Air India is present
-Is Air India present after applying filter: [33mtrue[39m
-Verify SpiceJet is no longer present
-Is SpiceJet still present after switching to Air India filter: [33mfalse[39m
+Starting test: Verify flight interchange functionality
+Entered Chennai (MAA) in the From field
+
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\test-failed-1.png]]
+
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\video.webm]]
+
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip]]
 ]]>
 </system-out>
 </testcase>

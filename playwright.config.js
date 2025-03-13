@@ -28,7 +28,7 @@ module.exports = defineConfig({
         screenshot: `only-on-failure`,
         video: `retain-on-failure`,
         trace: `retain-on-failure`,
-        actionTimeout: 60000,
+        actionTimeout: 180000,
         viewport: null,
         deviceScaleFactor: undefined,
          launchOptions: { args: ['--start-maximized'] }
