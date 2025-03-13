@@ -142,7 +142,7 @@ async function verifyBookingPage(page) {
   console.log('Booking details page verified successfully.');
 }
 
-test.describe.only('Agent Login Flow', () => {
+test.describe('Agent Login Flow', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log('Starting test: Logging in...');
@@ -257,7 +257,6 @@ test.describe.only('Agent Login Flow', () => {
       console.log('The dates do not match.');
     }
     console.log('Test completed: Date verification process finished.');
-
   });
 
   test('Tc_12: Verify default values in location dropdowns and departure date field', async ({ page }) => {
