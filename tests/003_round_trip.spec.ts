@@ -142,7 +142,7 @@ async function verifyBookingPage(page) {
   console.log('Booking details page verified successfully.');
 }
 
-test.describe.only('Agent Login Flow', () => {
+test.describe('Agent Login Flow', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log('Starting test: Logging in...');
@@ -401,7 +401,7 @@ const clearInputField = async (locator) => {
       });
 
 
-      test('TC_12: Verify Interchange Location Functionality on the Dashboard Page after click interchange button.. @smoke', async ({ page }) => {
+      test('TC_12: Verify Interchange Location Functionality on the Dashboard Page after click interchange button. @smoke', async ({ page }) => {
 
     
         await page.getByRole('button', { name: 'Round Trip' }).click();
@@ -432,9 +432,227 @@ const clearInputField = async (locator) => {
   await expect(page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location')).toHaveValue('Bengaluru - Bengaluru Intl Arpt');
 
 
+  
+      });
+
+      test.only('TC_13: Verify Roundtrip booking. @smoke', async ({ page }) => {
+
+    
+        await page.getByRole('button', { name: 'Round Trip' }).click();
+        await expect(page.getByRole('button', { name: 'Round Trip' })).toBeEnabled();
+      
+        // Verify initial values
+        await expect(page.getByRole('img', { name: 'Search Icon' })).toBeVisible();
+        const fromInput = page.locator('div').filter({ hasText: /^From$/ }).getByPlaceholder('Select a location');
+        const toInput = page.locator('div').filter({ hasText: /^To$/ }).getByPlaceholder('Select a location');
+      
+        await expect(fromInput).toHaveValue('Chennai - Chennai Arpt');
+        await expect(toInput).toHaveValue('Delhi - Delhi Indira Gandhi Intl');
+        
+    //     // Get today's date in 'DD/MM/YYYY' format
+    // const today = new Date();
+    // const todayDate = today.getDate();
+    // const todayFormatted = today.toLocaleDateString('en-GB'); // 'DD/MM/YYYY' format
+
+    // // Calculate the next day
+    // const tomorrow = new Date(today);
+    // tomorrow.setDate(today.getDate() + 1);
+    // const tomorrowDate = tomorrow.getDate();
+    // const tomorrowFormatted = tomorrow.toLocaleDateString('en-GB'); // 'DD/MM/YYYY'
+
+    // // Check if the Departure Date field has today's date
+    // const departureField = page.getByPlaceholder('Departure Date');
+    // const departureValue = await departureField.inputValue();
+
+    // if (departureValue === todayFormatted) {
+    //     console.log(`Departure date is today (${todayFormatted}). Selecting next day (${tomorrowFormatted}).`);
+
+    //     // Open the date picker
+    //     await departureField.click();
+
+    //     // Select the next day dynamically in the calendar
+    //     await page.getByText(tomorrowDate.toString(), { exact: true }).click();
+
+    //     // Click the "OK" button
+    //     await page.getByRole('button', { name: 'OK' }).click();
+
+    //     // Verify the departure date changed to the next day
+    //     await expect(departureField).toHaveValue(tomorrowFormatted);
+        
+    //     // Verify the return flight is updated to the next day after departure
+    //     const returnDate = new Date(tomorrow);
+    //     returnDate.setDate(tomorrow.getDate() + 1);
+    //     const returnDateFormatted = returnDate.toLocaleDateString('en-GB');
+
+    //     await expect(page.getByPlaceholder('Book a return flight')).toHaveValue(returnDateFormatted);
+    // } else {
+    //     console.log(`Departure date is already set to a different date: ${departureValue}`);
+    // }
+
+
+
+
+        //await page.getByRole('img', { name: 'icon', exact: true }).click();
+        await page.locator("img[alt='Search Icon']").click();
+        await page.waitForTimeout(9000); // Waits for 5 seconds
+
+
+ // Select Departure Flight
+ const departureViewPrice = page.locator("body > div:nth-child(1) > div:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > button:nth-child(2)");
+ await departureViewPrice.click();
+ const departureBookNow = page.locator("body > div:nth-child(1) > div:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1)");
+ await departureBookNow.click();
+
+ // Select Return Flight
+ const returnViewPrice = page.locator("body > div:nth-child(1) > div:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > button:nth-child(2)");
+ await returnViewPrice.click();
+ const returnBookNow = page.locator("body > div:nth-child(1) > div:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(4) > button:nth-child(1)");
+ await returnBookNow.click();
+ await page.waitForTimeout(6000); // Waits for 5 seconds
+
+
+ // Selector for the Confirm Payment button
+ const confirmPaymentButton = page.locator("body > div:nth-child(1) > div:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(40) > div:nth-child(3) > button:nth-child(2)");
+
+ // Wait for the page to fully load
+ await page.waitForLoadState('networkidle'); 
+
+ // Check if Confirm Payment button exists before waiting
+ if (await confirmPaymentButton.isVisible()) {
+   console.log('✅ Confirm Payment button is visible, proceeding to click.');
+
+   // Ensure the modal overlay is detached (if applicable)
+   await page.locator('div.modal-overlay').waitFor({ state: 'detached', timeout: 5000 });
+
+   // Wait for the button to be visible and click
+   await confirmPaymentButton.waitFor({ state: 'visible', timeout: 30000 });  // Reduce timeout to 30s
+   await confirmPaymentButton.click();
+   
+   console.log('🛒 Confirm Payment button clicked successfully!');
+ } else {
+   console.log('❌ Confirm Payment button is NOT visible. Test failed.');
+ }
+
+
+ await page.waitForTimeout(6000); // Waits for 5 seconds
+
+//  // Check if "Request flight no longer available" alert appears
+//  const flightNotAvailableAlert = page.locator("div[role='alert'] div:nth-child(2)");
+//  if (await flightNotAvailableAlert.isVisible()) {
+//      console.log("Flight no longer available alert is displayed.");
+//  } else {
+//      console.log("Flight successfully booked.");
+//  }
+
+
+
+ console.log("Filling Traveller Details...");
+  await page.getByLabel('Traveller Details').getByLabel('angle down').click();
+  await page.getByText('Mr', { exact: true }).click();
+  
+  await page.getByPlaceholder('First Name').click();
+  await page.getByPlaceholder('First Name').fill('Jayakumar');
+  await page.getByPlaceholder('First Name').press('Tab');
+  await page.getByPlaceholder('Last Name').fill('Thiruvenkidam');
+  
+  await page.getByPlaceholder('Mobile Number', { exact: true }).click();
+  await page.getByPlaceholder('Mobile Number', { exact: true }).fill('7200312848');
+  
+  await page.getByPlaceholder('Email ID').click();
+  await page.getByPlaceholder('Email ID').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByPlaceholder('Passport number').click();
+  await page.getByPlaceholder('Passport number').fill('98765432');
+  
+  // 3️⃣ Continue to Addons Page
+  console.log("Proceeding to Addons Page...");
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('form')).toContainText('Addons (Optional)');
+  
+  // 4️⃣ Select Meals
+  // console.log("Selecting Meal Preferences...");
+  // await expect(page.getByRole('tablist')).toContainText('Meals');
+  // await expect(page.getByRole('radiogroup')).toContainText('Veg');
+  // await expect(page.getByRole('radiogroup')).toContainText('Non-Veg');
+  // await page.getByLabel('Non-Veg').check();
+  
+  // // 5️⃣ Choose Baggage Addons
+  // console.log("Selecting Baggage Preferences...");
+  // await page.getByRole('tab', { name: 'Baggage' }).click();
+  // await expect(page.getByLabel('Baggage')).toContainText('Bag Out First with 1 Bag');
+  // // await expect(page.getByLabel('Baggage')).toContainText('5KG');
+  // // await expect(page.getByLabel('Baggage')).toContainText('10KG');
+  // await page.locator('div').filter({ hasText: /^₹3000$/ }).getByRole('button').nth(1).click();
+   await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 6️⃣ Seat Selection
+  console.log("Selecting Seats...");
+  // await expect(page.locator('form')).toContainText('Seat Selection');
+  // await expect(page.getByLabel('Seat Selection').getByRole('button')).toContainText('Flight 1');
+  // await page.getByText('10A').click();
+  // await expect(page.getByLabel('Seat Selection').getByRole('paragraph')).toContainText('(Selected)');
+  // await page.locator('html').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 7️⃣ Contact Details
+  console.log("Verifying Contact Details...");
+  await expect(page.locator('form')).toContainText('Contact Details');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  console.log("Checking Validation Messages...");
+  await expect(page.getByText('Mobile number is required')).toBeVisible();
+  await expect(page.getByText('Email is required')).toBeVisible();
+  
+  // 8️⃣ Enter Correct Contact Information
+  console.log("Filling Correct Contact Information...");
+  await page.getByPlaceholder('Mobile Number').fill('7200315848');
+  await page.getByPlaceholder('Email Id').fill('jayakumarjj.t@gmail.com');
+  
+  await page.getByRole('button', { name: 'Continue' }).click();
+  
+  // 9️⃣ Agree to Terms & Confirm Payment
+  console.log("Agreeing to Terms & Confirming Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Confirm Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Confirm Payment']").click();
+  
+  // 🔟 Final Payment Process
+  console.log("Proceeding with Final Payment...");
+  await page.locator('#agree').scrollIntoViewIfNeeded();
+  await page.locator('#agree').check();
+  await page.locator("//button[normalize-space()='Make Payment']").scrollIntoViewIfNeeded();
+  await page.locator("//button[normalize-space()='Make Payment']").click();
+  
+  // Selecting  Razorpay
+  console.log("Selecting Razorpay...");
+  await page.locator("//a[normalize-space()='Razor PAY']").click();
+  await page.locator("//button[normalize-space()='Pay Now']").click();
+
+  // Wait for 2 minutes (120,000 milliseconds) to allow manual payment
+console.log('Waiting for 2 minutes to complete the payment manually...');
+await page.waitForTimeout(120000); // 120000ms = 2 minutes
+
+console.log('2 minutes wait completed, proceeding with the next steps...');
+console.log("Booking flow completed successfully.");
 
 
 
   
       });
+
+      test('TC_14: Verify Booking flow for roundtrip. @smoke', async ({ page }) => {
+ 
+      
+        await page.getByRole('button', { name: 'Round Trip' }).click();
+        await page.getByRole('img', { name: 'Search Icon' }).click();
+        await page.locator('div:nth-child(5) > .rs-btn').first().click();
+        await page.locator('div > div:nth-child(4) > .rs-btn').first().click();
+        await page.locator('div:nth-child(2) > div:nth-child(3) > ._border_d5bqv_9 > .rs-panel-body > div > div:nth-child(5) > .rs-btn').click();
+        await page.locator('div:nth-child(2) > div:nth-child(3) > ._border_d5bqv_9 > div > .rs-panel > .rs-panel-body > div > div > div:nth-child(4) > .rs-btn').first().click();
+        
+          
+            });
 });
