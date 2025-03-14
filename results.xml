@@ -1,34 +1,24 @@
-<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="22.092686">
-<testsuite name="003_OnewayTrip.spec.ts" timestamp="2025-03-07T12:35:17.419Z" hostname="chrome" tests="1" failures="1" skipped="0" time="18.548" errors="0">
-<testcase name="Agent Login Flow › Verify flight interchange functionality" classname="003_OnewayTrip.spec.ts" time="18.548">
-<failure message="003_OnewayTrip.spec.ts:329:6 Verify flight interchange functionality" type="FAILURE">
-<![CDATA[  [chrome] › 003_OnewayTrip.spec.ts:329:6 › Agent Login Flow › Verify flight interchange functionality 
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="127.654057">
+<testsuite name="003_OnewayTrip.spec.ts" timestamp="2025-03-13T13:39:04.751Z" hostname="chrome" tests="1" failures="1" skipped="0" time="122.497" errors="0">
+<testcase name="Agent Login Flow › TC_40: Verify Flight Booking and Payment via Razorpay UPI" classname="003_OnewayTrip.spec.ts" time="122.497">
+<failure message="003_OnewayTrip.spec.ts:353:6 TC_40: Verify Flight Booking and Payment via Razorpay UPI" type="FAILURE">
+<![CDATA[  [chrome] › 003_OnewayTrip.spec.ts:353:6 › Agent Login Flow › TC_40: Verify Flight Booking and Payment via Razorpay UPI 
 
-    TypeError: searchInput.fill is not a function
-
-      118 |     } else if (type === 'To') {
-      119 |      const searchInput = page.getByPlaceholder('Search').last().click();
-    > 120 |       await searchInput.fill('delhi');
-          |                         ^
-      121 |       await page.getByTestId('picker-popup').getByText('Delhi', { exact: true }).click();
-      122 |       await expect(page.getByText('ToDelhiDEL, Delhi Indira')).toBeVisible();
-      123 |       console.log('Entered Delhi (DEL) in the To field');
-        at selectLocationField (C:\Users\jayakumart\Automation\Playwright Automation\Playwright_Tripvista\Playwright_Tripvista\tests\003_OnewayTrip.spec.ts:120:25)
-        at C:\Users\jayakumart\Automation\Playwright Automation\Playwright_Tripvista\Playwright_Tripvista\tests\003_OnewayTrip.spec.ts:336:7
+    Test timeout of 120000ms exceeded.
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\test-failed-1.png
+    test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\video.webm
+    test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\video.webm
     ────────────────────────────────────────────────────────────────────────────────────────────────
 
     attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip
+    test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\trace.zip
     Usage:
 
-        npx playwright show-trace test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip
+        npx playwright show-trace test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -40,14 +30,46 @@ Logging in...
 Verifying login...
 Verifying login success message...
 Login success message verified.
-Starting test: Verify flight interchange functionality
-Entered Chennai (MAA) in the From field
+Entered Chennai in the From field
+Entered Delhi in the To field
+Selecting departure date
+Navigating to next month
+Selecting return date
+Selecting number of travellers
+Selecting passengers: 1 Adults, 0 Children, 0 Infants
+Clicked on Apply button
+Clicking Book Now button
+Verifying airlines section visibility
+Selecting first available flight option
+Verifying booking details visibility
+Verifying traveller details visibility
+Selecting title
+Filling first name
+Filling last name
+Filling mobile number
+Filling email ID
+Selecting date of birth
+Verifying Continue button visibility
+Clicking Continue button
+Clicking Addons Continue button
+Selecting seat for first flight
+Clicking Continue button
+Verifying mobile number field visibility
+Filling alternate mobile number
+Filling alternate email ID
+Clicking Continue button
+Reviewing and confirming booking
+Agreeing to terms and conditions
+Proceeding to payment
+Selecting Razor Pay option
+Clicking Pay Now button
+Manual action required to complete the payment process.
 
-[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\test-failed-1.png]]
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\test-failed-1.png]]
 
-[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\video.webm]]
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\video.webm]]
 
-[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-0f040-t-interchange-functionality-chrome\trace.zip]]
+[[ATTACHMENT|test-results\003_OnewayTrip-Agent-Login-99be9-nd-Payment-via-Razorpay-UPI-chrome\trace.zip]]
 ]]>
 </system-out>
 </testcase>
