@@ -211,7 +211,7 @@ await expect(page.getByText(day)).toBeVisible();
     await page.getByText('Sign out').click();
   });
 
-  test.only('TC_ONEWAY_25: Verify that the flight search results are displayed correctly for a valid One-Way Trip.', async ({ page }) => {
+  test('TC_ONEWAY_25: Verify that the flight search results are displayed correctly for a valid One-Way Trip.', async ({ page }) => {
    
     await page.goto('https://tripvista.appxpay.in/home');
     await page.getByPlaceholder('Enter your email').click();
@@ -228,7 +228,7 @@ await expect(page.getByText(day)).toBeVisible();
     await page.getByRole('img', { name: '@simonguo' }).click();
     await page.getByText('Sign out').click();
   });
-  test.only('TC_ONEWAY_26: Verify search results validations.', async ({ page }) => {
+  test('TC_ONEWAY_26: Verify search results validations.', async ({ page }) => {
     await page.goto('https://tripvista.appxpay.in/home');
     await page.getByPlaceholder('Enter your email').click();
     await page.getByPlaceholder('Enter your email').fill('agent@gmail.com');
@@ -334,7 +334,7 @@ await expect(page.getByText(day)).toBeVisible();
     await page.getByText('Sign out').click();
     
   });
-test.only('Book a Flight and Proceed to Payment', async ({ page }) => {
+test('Book a Flight and Proceed to Payment', async ({ page }) => {
   await page.goto('https://tripvista.appxpay.in/home');
 
   // Login

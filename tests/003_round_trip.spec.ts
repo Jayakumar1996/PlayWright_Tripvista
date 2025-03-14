@@ -435,7 +435,7 @@ const clearInputField = async (locator) => {
   
       });
 
-      test.only('TC_13: Verify Roundtrip booking. @smoke', async ({ page }) => {
+      test('TC_13: Verify Roundtrip booking. @smoke', async ({ page }) => {
 
     
         await page.getByRole('button', { name: 'Round Trip' }).click();
