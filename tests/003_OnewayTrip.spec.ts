@@ -350,7 +350,628 @@ test('TC_07: Verify flight interchange functionality', async ({ page }) => {
   console.log('Verified From field is restored to "Chennai (MAA)" and To field to "Delhi (DEL)"');
 });
 
-test.only('TC_39: Verify Flight Booking and Wallet Payment Process Verification', async ({ page }) => {
+test.only('TC_30: Verify that the flight listing can be sorted by Airlines, Departure, Duration, Arrival, and Price using sorting icons.', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Tuesday, April 15th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+
+// Get only the text content of the <span>, dynamically ignoring the <img>
+const airlineNames = await page.locator('span[style*="margin-right: 10px"]').evaluateAll(spans =>
+  spans.map(span => {
+      // Get the text content, excluding the image
+      const text = Array.from(span.childNodes)
+          .filter(node => node.nodeType === Node.TEXT_NODE) // Only keep text nodes
+          .map(node => node.textContent?.trim() || '') // Safely handle null textContent
+          .join(' '); // Combine in case there’s more than one text node
+
+      return text;
+  }).filter(name => name) // Filter out any empty values
+);
+
+// Log the cleaned list of airline names
+console.log('Cleaned airline names:', airlineNames);
+
+// Sort and compare to check order
+const sortedNames = [...airlineNames].sort();
+if (JSON.stringify(airlineNames) === JSON.stringify(sortedNames)) {
+  console.log('Airline names are in ascending order');
+} else {
+  console.error('Airline names are NOT in ascending order');
+}
+});
+
+test('TC_31: Verify that the Net Fare details are displayed for each flight when clicking the eye icon and that the Fare Details pop-up appears on hovering over the "i" info icon.', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Tuesday, April 15th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    await page.getByRole('img', { name: 'Visible Icon' }).click();
+    console.log('Clicked on the Visible Icon');
+    await expect(page.getByRole('img', { name: 'Close Icon' })).toBeVisible();
+    console.log('Close Icon is visible');
+    await expect(page.locator("text=Net Fare:").first()).toBeVisible();
+    console.log('Net Fare text is visible');
+
+});
+
+test('TC_32: Verify Flight Itinerary Screen and Mandatory Fields Validation', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Tuesday, April 15th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+
+        // Toggle GST section
+    await page.locator('.rs-toggle-presentation').click();
+    console.log('GST section opened');
+
+    // Check visibility of key elements on the page
+    await expect(page.getByText('GSTIN', { exact: true })).toBeVisible();
+    console.log('GSTIN section is visible');
+    await expect(page.getByText('Fare DetailsBase Fare₹')).toBeVisible();
+    console.log('Fare details are visible');
+    await expect(page.getByRole('heading', { name: 'Time left' })).toBeVisible();
+    console.log('Time left heading is visible');
+    await expect(page.locator('form').getByText('Add ons')).toBeVisible();
+    console.log('Add-ons section is visible');
+    await expect(page.locator('form').getByText('Seat Selection')).toBeVisible();
+    console.log('Seat selection section is visible');
+    await expect(page.getByText('Review & Confirm')).toBeVisible();
+    console.log('Review & Confirm section is visible');
+    // Try to continue without filling required fields
+    await page.getByRole('button', { name: 'Continue' }).click();
+    console.log('Clicked Continue button');
+    // Check validation errors
+    await expect(page.getByText('Title is required')).toBeVisible();
+    console.log('Validation error: Title is required');
+    await expect(page.getByText('First Name is required')).toBeVisible();
+    console.log('Validation error: First Name is required');
+    await expect(page.getByText('Last Name is required')).toBeVisible();
+    console.log('Validation error: Last Name is required');
+    await expect(page.getByText('Mobile number is required')).toBeVisible();
+    console.log('Validation error: Mobile number is required');
+    await expect(page.getByText('Email is required')).toBeVisible();
+    console.log('Validation error: Email is required');
+    await expect(page.getByText('Date of Birth is required')).toBeVisible();
+    console.log('Validation error: Date of Birth is required');
+});
+
+test('TC_33: Verify Flight Booking with Traveler and GST Details Entry', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Tuesday, April 15th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+  
+    console.log('Selecting title');
+    await page.getByRole('combobox').selectOption('mr');
+  
+    console.log('Filling first name');
+    await page.getByPlaceholder('Enter the First Name').click();
+    await page.getByPlaceholder('Enter the First Name').fill('Jayakumar');
+  
+    console.log('Filling last name');
+    await page.getByPlaceholder('Enter the Last Name').click();
+    await page.getByPlaceholder('Enter the Last Name').fill('T');
+  
+    console.log('Filling mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('9876543210');
+  
+    console.log('Filling email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('jk@yopmail.com');
+  
+    console.log('Selecting date of birth');
+    await page.getByPlaceholder('dd/MM/yyyy').click();
+    await page.getByLabel('Next month').click();
+    await page.getByLabel('Select month').click();
+    await page.getByLabel('Mar 2009').getByText('Mar').click();
+    await page.getByLabel('12 Mar').locator('div').click();
+
+        // Toggle GST section
+    await page.locator('.rs-toggle-presentation').click();
+    console.log('GST section opened');
+    // Fill GSTIN details
+    await page.getByPlaceholder('Enter the GSTIN Number').fill('27AAAPA1234A1Z5');
+    console.log('GSTIN Number entered');
+    await page.getByPlaceholder('Enter the Registered Name').fill('Jayakumar');
+    console.log('Registered Name entered');
+    await page.getByPlaceholder('Enter the GSTIN Mobile Number').fill('38498230944');
+    console.log('GSTIN Mobile Number entered');
+    await page.getByPlaceholder('Enter the GSTIN Email Address').fill('jk@yopmail.com');
+    console.log('GSTIN Email Address entered');
+    await page.getByPlaceholder('Enter the GSTIN Address').fill('Chennai, India');
+    console.log('GSTIN Address entered');
+  
+    console.log('Verifying Continue button visibility');
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  
+    console.log('Clicking traveller details Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+});
+
+test('TC_34: Verify Add-ons Selection (Meals, Baggage, Extra Services) in Flight Booking', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Tuesday, April 15th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+  
+    console.log('Selecting title');
+    await page.getByRole('combobox').selectOption('mr');
+  
+    console.log('Filling first name');
+    await page.getByPlaceholder('Enter the First Name').click();
+    await page.getByPlaceholder('Enter the First Name').fill('Jayakumar');
+  
+    console.log('Filling last name');
+    await page.getByPlaceholder('Enter the Last Name').click();
+    await page.getByPlaceholder('Enter the Last Name').fill('T');
+  
+    console.log('Filling mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('9876543210');
+  
+    console.log('Filling email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('jk@yopmail.com');
+  
+    console.log('Selecting date of birth');
+    await page.getByPlaceholder('dd/MM/yyyy').click();
+    await page.getByLabel('Next month').click();
+    await page.getByLabel('Select month').click();
+    await page.getByLabel('Mar 2009').getByText('Mar').click();
+    await page.getByLabel('12 Mar').locator('div').click();
+  
+    console.log('Verifying Continue button visibility');
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  
+    console.log('Clicking traveller details Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+      // Meals
+    await page.getByRole('combobox').click();
+    const first_meal_option = page.locator('.rs-picker-select-menu-item').first();
+    const meal_text = await first_meal_option.innerText();
+    console.log('Selected meal:', meal_text);
+    await first_meal_option.click();
+
+    // Baggage
+    await page.getByRole('tab', { name: 'Baggage' }).click();
+    await expect(page.getByText('Select baggage option for')).toBeVisible();
+    await page.getByText('Select baggage option for').click();
+    const first_baggage_option = page.locator('.rs-picker-select-menu-item').first();
+    const baggage_text = await first_baggage_option.innerText();
+    console.log('Selected baggage option:', baggage_text);
+    await first_baggage_option.click();
+
+    // Extra services
+    await page.getByRole('tab', { name: 'Extra Services' }).click();
+
+    console.log('Clicking Addons Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+
+  
+});
+
+test('TC_35: Verify Seat Selection in Flight Booking', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Monday, April 14th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+  
+    console.log('Selecting title');
+    await page.getByRole('combobox').selectOption('mr');
+  
+    console.log('Filling first name');
+    await page.getByPlaceholder('Enter the First Name').click();
+    await page.getByPlaceholder('Enter the First Name').fill('Jayakumar');
+  
+    console.log('Filling last name');
+    await page.getByPlaceholder('Enter the Last Name').click();
+    await page.getByPlaceholder('Enter the Last Name').fill('T');
+  
+    console.log('Filling mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('9876543210');
+  
+    console.log('Filling email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('jk@yopmail.com');
+  
+    console.log('Selecting date of birth');
+    await page.getByPlaceholder('dd/MM/yyyy').click();
+    await page.getByLabel('Next month').click();
+    await page.getByLabel('Select month').click();
+    await page.getByLabel('Mar 2009').getByText('Mar').click();
+    await page.getByLabel('12 Mar').locator('div').click();
+  
+    console.log('Verifying Continue button visibility');
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Clicking Addons Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+
+    console.log('Selecting seat for first flight');
+    await page.getByText('30F').click();
+    await expect(page.getByText('(Selected)')).toBeVisible();
+
+    console.log('Clicking Seat selection Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+});
+
+test('TC_36: Verify Seat Selection is not applicable for this Itinerary functionality.', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Monday, April 14th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+  
+    console.log('Selecting title');
+    await page.getByRole('combobox').selectOption('mr');
+  
+    console.log('Filling first name');
+    await page.getByPlaceholder('Enter the First Name').click();
+    await page.getByPlaceholder('Enter the First Name').fill('Jayakumar');
+  
+    console.log('Filling last name');
+    await page.getByPlaceholder('Enter the Last Name').click();
+    await page.getByPlaceholder('Enter the Last Name').fill('T');
+  
+    console.log('Filling mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('9876543210');
+  
+    console.log('Filling email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('jk@yopmail.com');
+  
+    console.log('Selecting date of birth');
+    await page.getByPlaceholder('dd/MM/yyyy').click();
+    await page.getByLabel('Next month').click();
+    await page.getByLabel('Select month').click();
+    await page.getByLabel('Mar 2009').getByText('Mar').click();
+    await page.getByLabel('12 Mar').locator('div').click();
+  
+    console.log('Verifying Continue button visibility');
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Clicking Addons Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Clicking Seat selection Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Verifying mobile number field visibility');
+    await expect(page.getByPlaceholder('Enter the Mobile Number')).toBeVisible();
+  
+    console.log('Filling alternate mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('45645644616');
+  
+    console.log('Filling alternate email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('j@yopmail.com');
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+});
+
+test('TC_37: Verify Payment Confirmation in Flight Booking', async ({ page }) => {
+  const fromCity = 'Chennai'; 
+  const toCity = 'Delhi'; 
+  await enterCity(page, 'From', fromCity);
+  await enterCity(page, 'To', toCity);
+  
+  console.log('Selecting departure date');
+  await page.getByText('Departure').click();
+  
+    console.log('Navigating to next month');
+    await page.getByLabel('Next Month').click();
+  
+    console.log('Selecting return date');
+    await page.getByLabel('Choose Monday, April 14th,').click();
+  
+    console.log('Selecting number of travellers');
+    const adults = 1;
+    const children = 0;
+    const infants = 0;
+    await selectPassengers(page, adults, children, infants);
+    await page.getByRole('button', { name: 'APPLY' }).click();
+    console.log('Clicked on Apply button');
+  
+    console.log('Clicking Book Now button');
+    await page.getByRole('button', { name: 'Book Now' }).click();
+  
+    console.log('Verifying airlines section visibility');
+    await expect(page.locator('div').filter({ hasText: /^Airlines$/ })).toBeVisible();
+  
+    console.log('Selecting first available flight option');
+    await page.locator('div:nth-child(4) > .rs-btn').first().click();
+  
+    console.log('Verifying booking details visibility');
+    await expect(page.getByText('Complete Your Booking Details')).toBeVisible();
+  
+    console.log('Verifying traveller details visibility');
+    await expect(page.getByText('Traveller Details')).toBeVisible();
+  
+    console.log('Selecting title');
+    await page.getByRole('combobox').selectOption('mr');
+  
+    console.log('Filling first name');
+    await page.getByPlaceholder('Enter the First Name').click();
+    await page.getByPlaceholder('Enter the First Name').fill('Jayakumar');
+  
+    console.log('Filling last name');
+    await page.getByPlaceholder('Enter the Last Name').click();
+    await page.getByPlaceholder('Enter the Last Name').fill('T');
+  
+    console.log('Filling mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('9876543210');
+  
+    console.log('Filling email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('jk@yopmail.com');
+  
+    console.log('Selecting date of birth');
+    await page.getByPlaceholder('dd/MM/yyyy').click();
+    await page.getByLabel('Next month').click();
+    await page.getByLabel('Select month').click();
+    await page.getByLabel('Mar 2009').getByText('Mar').click();
+    await page.getByLabel('12 Mar').locator('div').click();
+  
+    console.log('Verifying Continue button visibility');
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Clicking Addons Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+    console.log('Selecting seat for first flight');
+    await page.getByText('30F').click();
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Verifying mobile number field visibility');
+    await expect(page.getByPlaceholder('Enter the Mobile Number')).toBeVisible();
+  
+    console.log('Filling alternate mobile number');
+    await page.getByPlaceholder('Enter the Mobile Number').click();
+    await page.getByPlaceholder('Enter the Mobile Number').fill('45645644616');
+  
+    console.log('Filling alternate email ID');
+    await page.getByPlaceholder('Enter the Email ID').click();
+    await page.getByPlaceholder('Enter the Email ID').fill('j@yopmail.com');
+  
+    console.log('Clicking Continue button');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  
+    console.log('Reviewing and confirming booking');
+    await page.locator('body > div:nth-child(1) > section:nth-child(1) > section:nth-child(1) > main:nth-child(2) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > button:nth-child(2)').click();
+  
+    console.log('Agreeing to terms and conditions');
+    await page.locator('#agree').check();
+  
+    console.log('Proceeding to payment');
+    await page.locator("//button[normalize-space()='Make Payment']").click();
+});
+
+test('TC_38,39: Verify Flight Booking and Wallet Payment Process Verification', async ({ page }) => {
   const fromCity = 'Chennai'; 
   const toCity = 'Delhi'; 
   await enterCity(page, 'From', fromCity);
